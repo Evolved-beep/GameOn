@@ -54,23 +54,53 @@ form.quantity.addEventListener('change', function(){
   validTournament(this);
 });
 
+form.location.forEach(radioBtn => {
+  radioBtn.addEventListener('change', function(){
+    validLocation(this);
+  })
+});
+
+const Condition = document.getElementById("checkbox1");
+
+Condition.addEventListener('click', function(){
+  validCondition(this);
+})
+
+form.addEventListener('submit', function(event){
+  event.preventDefault();
+  if (validate() === true){
+    form.submit();
+
+  } else {
+    alert("Votre formulaire ne peut pas être envoyé");
+  }
+
+  console.log(form.submit.value);
+  console.log(validName);
+  console.log(validEmail);
+  console.log(validLocation);
+  console.log(validTournament.value);
+  console.log(validCondition);
+})
+
 
 // Création des fonctions afin de mettre en place la validité
 
-const validName = function(inputName){
+function validName(inputName){
   // Création de la regex pour les inputs nom/prénom
   const nameRegExp = new RegExp('^[A-Za-zÀ-ÖØ-öø-ÿ- \-]{2,}$');
-
   // Mise en place de la condition de validité pour les inputs nom/prénom
   let msg = "Votre nom est valide";
   if (nameRegExp.test(inputName.value) === false){
     msg = "Entrez un nom valide";
-  } 
-  console.log(msg);
-  console.log(nameRegExp.test(inputName.value));
-  console.log(inputName.value);
+    return alert("Erreur Nom");
+  }
+  console.log(inputName.value); 
+  return inputName.value;
+
 }
 
+validName();
 
 
 const validEmail = function(inputEmail){
@@ -79,39 +109,68 @@ const validEmail = function(inputEmail){
 
   if (emailRegExp.test(inputEmail.value) === false){
     msg = "Entrez une adresse mail valide"
-    
+    return alert("Erreur Mail")
   }
-  console.log(msg)
-    console.log(emailRegExp.test(inputEmail.value));
-    console.log(inputEmail.value);
+  return inputEmail.value;
+
+
 }
 
 const validDate = function(inputDate){
   //On formate la date afin de l'avoir en format fr
-  let intl = new Intl.DateTimeFormat("fr-FR", {weekday:"short",month:"2-digit",year:'numeric'});
   let dt = new Date();
-
+  let dateL= dt.toLocaleString('fr-FR', {
+    weekday:"short",
+    month:"2-digit",
+    year:"numeric"
+  })
+  let msg = "Votre date de naissance est valide";
+  
   // La condition nous sert à verifié que la date que rentre l'utilisateur n'est pas supérieur à la date d'aujourd'hui 
-  if (inputDate.value > intl.format(dt)){
+  if (inputDate.value > dateL){
     let msg="Vous devez entrer une date valide";
-    console.log(msg)
   }
-
-  else {
-    msg = "Date valide"
-  }
+ 
 }
 
 const validTournament = function(inputTournament){
-  const tournamentRegExp = new RegExp(
-    '/^[0-9]{1,}$/', 'g'
-  );
-
-  if (!tournamentRegExp.test(inputTournament.value)){
-    let msg = "Veuillez entrer un chiffre";
-    console.log(msg);
+  const tournamentRegExp = new RegExp('^[0-9]{1,}$');
+  let msg = "Votre chiffre est valide";
+  
+  if (tournamentRegExp.test(inputTournament.value) === false){
+    msg = "Veuillez entrer un chiffre valide";
+    return alert("Erreur blbk")
   }
-  else {
-    msg = "Nombre valide"
-  } 
+  return inputTournament.value;
+
+
 }
+
+const validLocation = function(inputLocation){
+  let msg = "Vous avez cochez au moins un des propositions";
+
+  if (inputLocation.value === false){
+    msg = "Vous devez cochez au minimum un lieu";
+    return alert("Erreur bkbl")
+  }
+
+  return inputLocation.value;
+
+}
+
+const validCondition = function(Condition){
+  let msg = "Vous devez accepter les termes";
+  if(Condition.checked){
+    msg = "Vous avez accepté les conditions";
+    return Condition.checked;
+  }
+  return alert("Erreur bkbkk")
+}
+
+const validate = function(){
+  if((validName()) && (validEmail()) && (validTournament()) && (validLocation()) && (validCondition()) === true){
+    alert("Félicitation votre réservation est effectué");
+    return true;
+    }
+}
+
