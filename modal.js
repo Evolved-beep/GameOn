@@ -40,7 +40,7 @@ form.first.addEventListener('change', function(){
 });
 
 form.last.addEventListener('change', function(){
-  validName(this);
+  validFamilyName(this);
 });
 
 form.email.addEventListener('change', function(){
@@ -75,43 +75,44 @@ form.addEventListener('submit', function(event){
     alert("Votre formulaire ne peut pas être envoyé");
   }
 
-  console.log(form.submit.value);
-  console.log(validName);
-  console.log(validEmail);
-  console.log(validLocation);
-  console.log(validTournament.value);
-  console.log(validCondition);
 })
 
 
 // Création des fonctions afin de mettre en place la validité
 
-function validName(inputName){
+const validName = function(inputName){
   // Création de la regex pour les inputs nom/prénom
   const nameRegExp = new RegExp('^[A-Za-zÀ-ÖØ-öø-ÿ- \-]{2,}$');
   // Mise en place de la condition de validité pour les inputs nom/prénom
   let msg = "Votre nom est valide";
-  if (nameRegExp.test(inputName.value) === false){
+  if (nameRegExp.test(form.first.value) === false){
     msg = "Entrez un nom valide";
-    return alert("Erreur Nom");
   }
-  console.log(inputName.value); 
-  return inputName.value;
-
+  console.log(msg);
+  console.log(form.first.value)
+  return inputName;
 }
 
-validName();
+const validFamilyName = function(inputFamilyName){
+  const FamNameRegExp = new RegExp('^[A-Za-zÀ-ÖØ-öø-ÿ- \-]{2,}$');
 
+  let msg = "Votre nom de Famille est valide";
+  if(FamNameRegExp.test(form.last.value) === false){
+    msg="Entrez votre nom de famille";
+  }
+  console.log(msg);
+  return inputFamilyName;
+}
 
 const validEmail = function(inputEmail){
   const emailRegExp = new RegExp ('^[a-zA-Z0-9À-ÖØ-öø-ÿ. \-\_]{1,}[@]{1}[a-zA-Z0-9.-_]{1,}[.]{1}[a-zA-Z]{2,10}$');
   let msg ="Votre email est valide";
 
-  if (emailRegExp.test(inputEmail.value) === false){
+  if (emailRegExp.test(form.email.value) === false){
     msg = "Entrez une adresse mail valide"
     return alert("Erreur Mail")
   }
-  return inputEmail.value;
+  return inputEmail;
 
 
 }
@@ -137,40 +138,43 @@ const validTournament = function(inputTournament){
   const tournamentRegExp = new RegExp('^[0-9]{1,}$');
   let msg = "Votre chiffre est valide";
   
-  if (tournamentRegExp.test(inputTournament.value) === false){
+  if (tournamentRegExp.test(form.quantity.value) === false){
     msg = "Veuillez entrer un chiffre valide";
     return alert("Erreur blbk")
   }
-  return inputTournament.value;
-
-
+  return inputTournament;
 }
 
 const validLocation = function(inputLocation){
   let msg = "Vous avez cochez au moins un des propositions";
 
-  if (inputLocation.value === false){
+  if (form.location.value === ""){
     msg = "Vous devez cochez au minimum un lieu";
-    return alert("Erreur bkbl")
+    return alert("Erreur vous devez cochez au moins une proposition");
   }
-
-  return inputLocation.value;
-
+  console.log(msg);
+  return inputLocation;
 }
 
 const validCondition = function(Condition){
-  let msg = "Vous devez accepter les termes";
-  if(Condition.checked){
-    msg = "Vous avez accepté les conditions";
-    return Condition.checked;
+  let msg = "Vous avez accepté les conditions";
+  if(Condition.checked == false){
+    msg = "Vous devez accepter les termes";
+    return alert("Vous devez acceptez les termes")
   }
-  return alert("Erreur bkbkk")
+  return Condition;
 }
 
 const validate = function(){
-  if((validName()) && (validEmail()) && (validTournament()) && (validLocation()) && (validCondition()) === true){
+  if((validName(form.first.value)) && (validEmail(form.email.value)) && (validTournament(form.quantity.value)) && (validLocation(form.location.value)) && (validCondition(Condition.checked === true)) === true){
     alert("Félicitation votre réservation est effectué");
     return true;
     }
+    console.log(form.first.value);
+    console.log(form.last.value);
+    console.log(form.email.value);
+    console.log(form.quantity.value);
+    console.log(form.location.value);
+    console.log(Condition.checked);
 }
 
