@@ -286,21 +286,25 @@ input {
 .formData[data-error-visible="true"] .text-control {
   border: 2px solid #e54858;
 }
-.errorInput {
-  border: 2px solid #e54858;
-}
-.successInput {
-  border: 2px solid #279e7a;
-;
-}
+
 .messageErreur {
+  margin: 6px 0;
   font-size: 0.8rem;
   color: red;
 }
 
 .messageValid {
+  margin: 6px 0;
   font-size: 0.8rem;
   color: #279e7a;
+} 
+
+.inputError {
+  border: 2px solid #e54858;
+} 
+
+.inputSuccess {
+  border: 2px solid #279e7a
 } 
 /* 
 input[data-error]::after {

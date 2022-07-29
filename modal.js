@@ -28,41 +28,46 @@ closemodal.addEventListener("click", removeClick);
 
 //Fonction pour faire disparaître le modal au clic
 function removeClick() {
-  modalbg.style.display = "none";
-  reset();
-}
-
-function reset(){
-  form.reset();
+  modalbg.style.display="none";
 }
 
 const modalSuccess = document.querySelector(".bgsuccess");
 
 function launchSuccess(){
   modalSuccess.style.display="block";
-  form.submit();
+}
+
+
+
+const button_close = document.querySelector("#button_close");
+button_close.addEventListener("click", successModal);
+
+function successModal (){
+  modalSuccess.style.display= "none";
+  modalbg.style.display="none";
+  location.reload()
 }
 
 // Variable pour récupèrer le form
 let form = document.querySelector("#form-action");
 
 // On découpe chaque input pour pouvoir y effectuer les validations nécéssaires
-form.first.addEventListener("change", function () {
+form.first.addEventListener("focusout", function () {
   validName();
 });
 
-form.last.addEventListener("change", function () {
+form.last.addEventListener("focusout", function () {
   validFamilyName();
 });
 
-form.email.addEventListener("change", function () {
+form.email.addEventListener("focusout", function () {
   validEmail();
 });
-form.birthdate.addEventListener("change", function () {
+form.birthdate.addEventListener("focusout", function () {
   validDate();
 });
 
-form.quantity.addEventListener("change", function () {
+form.quantity.addEventListener("focusout", function () {
   validTournament();
 });
 
@@ -81,7 +86,8 @@ Condition.addEventListener("click", function () {
 form.addEventListener("submit", function (event) {
   event.preventDefault();
   if (validate() === true) {
-    return launchSuccess();
+    event.stopPropagation();
+  return launchSuccess();
   } else {
     alert("Votre formulaire ne peut pas être envoyé");
   }
@@ -89,138 +95,126 @@ form.addEventListener("submit", function (event) {
 
 let Msg = document.createElement("span");
 
-function isError(element, message) {
+// traite les erreurs
+function setError(element, message){
+  Msg.classList.remove("messageValid")
   Msg.classList.add("messageErreur");
-  Msg.classList.remove("messageValid");
   Msg.innerHTML = message;
-  if (element !== form.location) {
-    element.parentElement.append(Msg);
-  } else {
-    element[0].parentElement.append(Msg);
-  }
-}
+  element.classList.remove("inputSuccess");
+  element.classList.add("inputError");
+  element.parentElement.append(Msg)
 
-function isValid(element, message, ) {
-  Msg.classList.add("messageValid");
-  Msg.classList.remove("messageErreur");
-  Msg.innerHTML = message;
-  if (element !== form.location) {
-    element.parentElement.append(Msg);
-  } else {
-    element[0].parentElement.append(Msg);
-  }
-}
-
-function isInputError(element) {
-  for(element of formData){
-    if (element.children.value === false) {
-      element.setAttribute("data-error-visible", "true");
-    }
-  }
+  return false;
 } 
 
-function isInputSuccess(element){
- 
+// traite la validation
+function setValid(element, message) {
+  Msg.classList.remove("messageErreur");
+  Msg.classList.add("messageValid");
+  Msg.innerHTML = message;
+  element.classList.remove("inputErreur");
+  element.classList.add("inputSuccess");
+  element.parentElement.append(Msg)
+
+  return true;
 }
 
+// traite les erreurs du bouton radio
+function setErrorLocation(element,message){
+  Msg.classList.remove("messageValid");
+  Msg.classList.add("messageErreur")
+  Msg.innerHTML= message;
+  element[0].parentElement.append(Msg)
+  return false;
+}
 
-// Création des fonctions afin de mettre en place la validité
-const validName = function () {
-  // Création de la regex pour les inputs nom/prénom
-  const nameRegExp = new RegExp("^[A-Za-zÀ-ÖØ-öø-ÿ- -]{2,}$");
-  // Mise en place de la condition de validité pour les inputs nom/prénom
-  if (nameRegExp.test(form.first.value) === false) {
-    isError(form.first, "Votre prénom doit contenir au minimum deux caractères valide");
-    isInputError(form.first);
+// traite la validation du bouton radio
+function setValidLocation(element,message){
+  Msg.classList.remove("messageErreur");
+  Msg.classList.add("messageValid");
+  Msg.innerHTML = message
+  element[0].parentElement.append(Msg)
 
-    return false;
-  }
-  console.log(form.first.value);
-  isValid(form.first, "Votre prénom est valide");
-  isInputSuccess(form.first);
   return true;
+}
+
+// test la validité du prénom
+const validName = function () {
+const nameRegExp = new RegExp("^[A-Za-zÀ-ÖØ-öø-ÿ- -]{2,}$");
+  if (nameRegExp.test(form.first.value.trim())) {
+    return setValid(form.first, "Votre prénom est valide");
+  }
+  
+  return setError(form.first, "Votre prénom doit contenir au minimum deux caractères valide"); 
 };
 
+// test la validité du nom de famille
 const validFamilyName = function () {
   const FamNameRegExp = new RegExp("^[A-Za-zÀ-ÖØ-öø-ÿ- -]{2,}$");
-  if (FamNameRegExp.test(form.last.value) === false) {
-    isError(form.last, "Votre nom doit contenir au minimum deux caractères valide");
-    isInputError(form.last);
-    return false;
+  if (FamNameRegExp.test(form.last.value.trim())) {   
+    return setValid(form.last, "Votre nom est valide") ;
   }
-  isValid(form.last, "Votre nom est valide");
-  isInputSuccess(form.last);
-  return true;
+
+  return setError(form.last, "Votre nom doit contenir au minimum deux caractères valide");
 };
 
+// test la validation de l'email
 const validEmail = function () {
   const emailRegExp = new RegExp(
     "^[a-zA-Z0-9À-ÖØ-öø-ÿ. -_]{1,}[@]{1}[a-zA-Z0-9.-_]{1,}[.]{1}[a-zA-Z]{2,10}$"
   );
-  if (emailRegExp.test(form.email.value) === false) {
-    isError(form.email, "Vous devez entrer une adresse email valide");
-    isInputError(form.email);
-    return false;
+  const emailValue = form.email.value.trim();
+  if (emailRegExp.test(emailValue)) { 
+    
+    return setValid(form.email, "Votre email est valide");
 
   }
-  isValid(form.email, "Votre email est valide");
-  isInputSuccess(form.email);
-
-  return true;
+  
+  return setError(form.email, "Vous devez entrer une adresse email valide");;
 };
 
+// test la validation de la date de naissance
 const validDate = function () {
   const birthDate = new Date(form.birthdate.value);
   const todayDate = new Date();
-
-  // La condition nous sert à verifié que la date que rentre l'utilisateur n'est pas supérieur à la date d'aujourd'hui
-  if (birthDate.getTime() > todayDate.getTime()) {
-    isError(form.birthdate, "Vous devez entrer votre date de naissance.");
-    isInputError(form.birthdate);
-    
-    return false;
+  const intervalYears = 100;
+  if (birthDate.getTime() > todayDate.getTime() || birthDate.getFullYear() < todayDate.getFullYear() - intervalYears) {
+    return setError(form.birthdate, "Vous devez entrer votre date de naissance.");;
   }
-  isValid(form.birthdate, "Votre date de naissance est valide");
-  isInputSuccess(form.birthdate);
-
-  return true;
+  
+  return setValid(form.birthdate, "Votre date de naissance est valide");
 };
+
+// test la validation de l'input tournamement
 const validTournament = function () {
   const tournamentRegExp = new RegExp("^[0-9]{1,}$");
-  if (tournamentRegExp.test(form.quantity.value) === false) {
-    isError(form.quantity, "Vous devez indiquer le nombre de tournois GameOn déjà joué");
-    isInputError(form.quantity);
+  if (tournamentRegExp.test(form.quantity.value)) {
+    return setValid(form.quantity, "Vous avez renseigné votre nombre de tournois GameOn joué");
   }
-  isValid(form.quantity, "Vous avez renseigné votre nombre de tournois GameOn joué");
-  isInputSuccess(form.quantity);
-  console.log(form.quantity.value);
-  return true;
+ 
+  return setError(form.quantity, "Vous devez indiquer le nombre de tournois GameOn déjà joué");
 };
 
+// Vérifie si un lieu est coché
 const validLocation = function () {
-  if (form.location.value === "") {
-    isError(form.location, "Veuillez cochez un des choix présent");
-
-    return false;
+  if (form.location.value) {
+    return setValidLocation(form.location, "Vous avez coché un lieu");
   }
-  isValid(form.location, "Vous avez coché un des choix présent");
 
-  return true;
+  return setErrorLocation(form.location, "Vous devez cocher un lieu !")
 };
 
+
+// Verifie si les conditions d'utilisation sont cochés 
 const validCondition = function () {
-  if (Condition.checked === false) {
-    isError(Condition, "Vous devez accepter les termes d'utilisation");
-    isInputError(Condition);
-
-    return false;
+  if (Condition.checked) {
+    return setValid(Condition, "Vous avez accepter les termes d'utilisation");
   }
-  isValid(Condition, "Vous avez accepter les termes d'utilisation");
-  isInputSuccess(Condition);
 
-  return true;
+  return setError(Condition, "Vous devez accepter les termes d'utilisation");
 };
 
+// On vérifie que tous les inputs return true dans ce cas validate est true et on peut envoyer le formulaire
 const validate = function () {
   if (
     validName() &&
@@ -233,4 +227,4 @@ const validate = function () {
   ) {
     return true;
   }
-};
+}
